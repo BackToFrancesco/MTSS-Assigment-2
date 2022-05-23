@@ -174,4 +174,46 @@ public class EShopTest {
         assert total == 960.00 - 50.00 - 10.00;
     }
 
+    @Test
+    public void testMouseDiscountAndProcessorAndMouseOrKeayboardDiscount() throws BillException {
+        // Arrange
+        List<EItem> items = new ArrayList<>();
+        for(int i = 0; i < 6; i++) {
+            items.add(new EItem(EItemType.PROCESSOR,"processor", 50.00));
+        }
+        for(int i = 0; i < 11; i++) {
+            items.add(new EItem(EItemType.MOUSE,"mouse", 10.00));
+        }
+
+        for(int i = 0; i < 11; i++) {
+            items.add(new EItem(EItemType.KEYBOARD,"keyboard", 20.00));
+        }
+
+        // Act
+        double total = bill.getOrderPrice(items, userMaggiorenne);
+
+        // Assert
+        assert total == (630.00 - 25.00 - 10.00 - 10.00) ;
+    }
+
+    @Test
+    public void testNumberMouseEqualsKeyboardiscount() throws BillException {
+        // Arrange
+        List<EItem> items = new ArrayList<>();
+
+        items.add(new EItem(EItemType.MOUSE, "1", 10.00));
+        items.add(new EItem(EItemType.MOUSE, "2", 20.00));
+        items.add(new EItem(EItemType.MOTHERBOARD, "0", 20.00));
+        items.add(new EItem(EItemType.MOTHERBOARD, "0", 20.00));
+        items.add(new EItem(EItemType.MOTHERBOARD, "0", 20.00));
+        items.add(new EItem(EItemType.KEYBOARD, "1", 30.00));
+        items.add(new EItem(EItemType.KEYBOARD, "2", 5.00));
+
+        // Act
+        double total = bill.getOrderPrice(items, userMaggiorenne);
+
+        // Assert
+        assert total == 125.00 - 5.00;
+    }
+
 }

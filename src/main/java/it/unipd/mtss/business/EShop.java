@@ -31,8 +31,10 @@ public class EShop implements Bill {
 
         double processorDiscount = getProcessorDiscount(itemsOrdered);
         double mouseDiscount = getMouseDiscount(itemsOrdered);
+        double mouseOrKeyboardDiscount=getMouseOrKeyBoardDiscount(itemsOrdered);
 
-        total = total + processorDiscount - mouseDiscount;
+        total = total + processorDiscount - mouseDiscount - 
+        mouseOrKeyboardDiscount;
 
         return total;
     }
@@ -90,6 +92,40 @@ public class EShop implements Bill {
             }
         }
 
+        if (minPrice == 0) {
+            return 0;
+        } else {
+            return (minPrice);
+        }
+    }
+
+    // Se vengono ordinati lo stesso numero di Mouse e Tastier
+    // viene regalato l’articolo meno caro
+    private double getMouseOrKeyBoardDiscount(List<EItem> itemsOrdered) {
+        int keyboardNumber = 0;
+        double minPrice = 0;
+        for (EItem eItem : itemsOrdered) {
+            if (eItem.getEItemType() == EItemType.KEYBOARD) {
+                keyboardNumber++;
+            }
+        }
+
+        int mouseNumber = 0;
+        for (EItem eItem2 : itemsOrdered) {
+            if (eItem2.getEItemType() == EItemType.MOUSE) {
+                mouseNumber++;
+            }
+        }
+        if (keyboardNumber == mouseNumber && mouseNumber > 0) {
+            EItem min = itemsOrdered.get(0);
+            minPrice = itemsOrdered.get(0).getPrice();
+            for (EItem e : itemsOrdered) {
+                if (e.getPrice() < min.getPrice()) {
+                    min = e;
+                    minPrice = e.getPrice();
+                }
+            }
+        }
         if (minPrice == 0) {
             return 0;
         } else {
