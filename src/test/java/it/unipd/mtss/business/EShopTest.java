@@ -61,11 +61,10 @@ public class EShopTest {
 
         // Act
         double total = bill.getOrderPrice(items, userMaggiorenne);
- 
+
         // Assert
         assert total == -20.00;
-    }   
-
+    }
 
     @Test(expected = BillException.class)
     public void testEmptyOrder() throws BillException {
@@ -89,7 +88,7 @@ public class EShopTest {
         items.add(new EItem(EItemType.PROCESSOR, "intel i5", 40.00));
         items.add(new EItem(EItemType.PROCESSOR, "intel i6", 50.00));
         items.add(new EItem(EItemType.PROCESSOR, "intel i7", 60.00));
-        items.add(new EItem( EItemType.MOUSE, "mouse 1", 6.00));
+        items.add(new EItem(EItemType.MOUSE, "mouse 1", 6.00));
 
         // Act
         double total = bill.getOrderPrice(items, userMaggiorenne);
@@ -101,8 +100,8 @@ public class EShopTest {
     public void testMoreThanFiveEqualProcessorDiscountOrder() throws BillException {
         // Arrange
         List<EItem> items = new ArrayList<>();
-        for(int i = 0; i < 8; i++) {
-            items.add(new EItem(EItemType.PROCESSOR,"processor", 100.00));
+        for (int i = 0; i < 8; i++) {
+            items.add(new EItem(EItemType.PROCESSOR, "processor", 100.00));
         }
 
         // Act
@@ -110,6 +109,69 @@ public class EShopTest {
 
         // Assert
         assert total == 800.00 - 50.00;
+    }
+
+    @Test
+    public void testMoreThanTenMouseOrder() throws BillException {
+        // Arrange
+        List<EItem> items = new ArrayList<>();
+
+        items.add(new EItem(EItemType.MOUSE, "1", 5.00));
+        items.add(new EItem(EItemType.MOUSE, "2", 10.00));
+        items.add(new EItem(EItemType.MOUSE, "3", 15.00));
+        items.add(new EItem(EItemType.MOUSE, "4", 20.00));
+        items.add(new EItem(EItemType.MOUSE, "5", 25.00));
+        items.add(new EItem(EItemType.MOUSE, "6", 30.00));
+        items.add(new EItem(EItemType.MOUSE, "7", 35.00));
+        items.add(new EItem(EItemType.MOUSE, "8", 40.00));
+        items.add(new EItem(EItemType.MOUSE, "9", 45.00));
+        items.add(new EItem(EItemType.MOUSE, "10", 50.00));
+        items.add(new EItem(EItemType.MOUSE, "11", 55.00));
+
+        // Act
+        double total = bill.getOrderPrice(items, userMaggiorenne);
+
+        // Assert
+        assert total == 325.00;
+    }
+
+    @Test
+    public void testLessThanTenMouseOrder() throws BillException {
+        // Arrange
+        List<EItem> items = new ArrayList<>();
+        items.add(new EItem(EItemType.MOUSE, "Mouse 1", 15.00));
+        items.add(new EItem(EItemType.MOUSE, "Mouse 2", 16.00));
+        items.add(new EItem(EItemType.MOUSE, "Mouse 3", 10.00));
+        items.add(new EItem(EItemType.MOUSE, "Mouse 4", 10.00));
+        items.add(new EItem(EItemType.MOUSE, "Mouse 5", 5.00));
+        items.add(new EItem(EItemType.MOTHERBOARD, "Motherboard 1", 250.00));
+        items.add(new EItem(EItemType.PROCESSOR, "Processor 1", 110.00));
+
+        // Act
+        double total = bill.getOrderPrice(items, userMaggiorenne);
+
+        // Assert
+        assert total == 416.00;
+    }
+
+    @Test
+    public void testMoreThanFiveProcessorAndMoreThan10Mouse() throws BillException {
+        // Arrange
+        List<EItem> items = new ArrayList<>();
+        for (int i = 0; i < 6; i++) {
+            items.add(new EItem(EItemType.PROCESSOR, "processor", 100.00));
+        }
+        for (int i = 0; i < 11; i++) {
+            items.add(new EItem(EItemType.MOUSE, "mouse", 10.00));
+        }
+
+        items.add(new EItem(EItemType.MOTHERBOARD, "Motherboard 1", 250.00));
+
+        // Act
+        double total = bill.getOrderPrice(items, userMaggiorenne);
+
+        // Assert
+        assert total == 960.00 - 50.00 - 10.00;
     }
 
 }

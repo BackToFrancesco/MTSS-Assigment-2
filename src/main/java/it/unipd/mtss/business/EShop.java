@@ -10,16 +10,13 @@ import it.unipd.mtss.model.EItem;
 import it.unipd.mtss.model.EItemType;
 import it.unipd.mtss.model.User;
 
-
 import java.util.ArrayList;
 import java.util.List;
 
-
-
 public class EShop implements Bill {
     @Override
-    public double getOrderPrice(List<EItem> itemsOrdered, User user) 
-    throws BillException {
+    public double getOrderPrice(List<EItem> itemsOrdered, User user)
+            throws BillException {
 
         int totalItems = itemsOrdered.size();
         double total = 0;
@@ -27,34 +24,35 @@ public class EShop implements Bill {
             total += eItem.getPrice();
         }
 
-         //se non c'è nessun item
-        if(totalItems == 0) {
+        // se non c'è nessun item
+        if (totalItems == 0) {
             throw new BillException("Nessun item nell'ordine");
         }
 
         double processorDiscount = getProcessorDiscount(itemsOrdered);
+        double mouseDiscount = getMouseDiscount(itemsOrdered);
 
-        total = total + processorDiscount;
+        total = total + processorDiscount - mouseDiscount;
 
         return total;
     }
 
-    //Se vengono ordinati più di 5 Processori viene fatto uno sconto del 
-    //50% sul prezzo del Processori meno caro;
+    // Se vengono ordinati più di 5 Processori viene fatto uno sconto del
+    // 50% sul prezzo del Processori meno caro;
     private double getProcessorDiscount(List<EItem> itemsOrdered) {
-        int processorNumber = 0 ;
+        int processorNumber = 0;
         double minPrice = 0;
         for (EItem eItem : itemsOrdered) {
-            if (eItem.getEItemType() == EItemType.PROCESSOR){
+            if (eItem.getEItemType() == EItemType.PROCESSOR) {
                 processorNumber++;
             }
 
-            if(processorNumber > 5){
+            if (processorNumber > 5) {
                 EItem min = itemsOrdered.get(0);
                 minPrice = itemsOrdered.get(0).getPrice();
                 for (EItem e : itemsOrdered) {
-                    if (e.getEItemType() == EItemType.PROCESSOR){
-                         if (e.getPrice() < min.getPrice()){
+                    if (e.getEItemType() == EItemType.PROCESSOR) {
+                        if (e.getPrice() < min.getPrice()) {
                             min = e;
                             minPrice = e.getPrice();
                         }
@@ -62,13 +60,41 @@ public class EShop implements Bill {
                 }
             }
         }
-        if(minPrice==0){
+        if (minPrice == 0) {
             return 0;
-        }
-        else{
-            return (-minPrice + (minPrice/2));
+        } else {
+            return (-minPrice + (minPrice / 2));
         }
     }
 
+    // Se vengono ordinati più di 10 Mouse il meno caro viene regalato
+    private double getMouseDiscount(List<EItem> itemsOrdered) {
+        int mouseNumber = 0;
+        double minPrice = 0;
+        for (EItem eItem : itemsOrdered) {
+            if (eItem.getEItemType() == EItemType.MOUSE) {
+                mouseNumber++;
+            }
+
+            if (mouseNumber > 10) {
+                EItem min = itemsOrdered.get(0);
+                minPrice = itemsOrdered.get(0).getPrice();
+                for (EItem e : itemsOrdered) {
+                    if (e.getEItemType() == EItemType.MOUSE) {
+                        if (e.getPrice() < min.getPrice()) {
+                            min = e;
+                            minPrice = e.getPrice();
+                        }
+                    }
+                }
+            }
+        }
+
+        if (minPrice == 0) {
+            return 0;
+        } else {
+            return (minPrice);
+        }
+    }
 
 }
