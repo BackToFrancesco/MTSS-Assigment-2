@@ -63,9 +63,9 @@ public class EShopTest {
         double total = bill.getOrderPrice(items, userMaggiorenne);
  
         // Assert
-        assert total == 90.00;
+        assert total == -20.00;
     }   
-    
+
 
     @Test(expected = BillException.class)
     public void testEmptyOrder() throws BillException {
@@ -77,6 +77,39 @@ public class EShopTest {
 
         // Assert
         fail();
+    }
+
+    @Test
+    public void testMoreThanFiveProcessorDiscountOrder() throws BillException {
+        // Arrange
+        List<EItem> items = new ArrayList<>();
+        items.add(new EItem(EItemType.PROCESSOR, "intel i2", 20.00));
+        items.add(new EItem(EItemType.PROCESSOR, "intel i3", 10.00));
+        items.add(new EItem(EItemType.PROCESSOR, "intel i4", 30.00));
+        items.add(new EItem(EItemType.PROCESSOR, "intel i5", 40.00));
+        items.add(new EItem(EItemType.PROCESSOR, "intel i6", 50.00));
+        items.add(new EItem(EItemType.PROCESSOR, "intel i7", 60.00));
+        items.add(new EItem( EItemType.MOUSE, "mouse 1", 6.00));
+
+        // Act
+        double total = bill.getOrderPrice(items, userMaggiorenne);
+        // Assert
+        assert total == 216.00 - 5.00;
+    }
+
+    @Test
+    public void testMoreThanFiveEqualProcessorDiscountOrder() throws BillException {
+        // Arrange
+        List<EItem> items = new ArrayList<>();
+        for(int i = 0; i < 8; i++) {
+            items.add(new EItem(EItemType.PROCESSOR,"processor", 100.00));
+        }
+
+        // Act
+        double total = bill.getOrderPrice(items, userMaggiorenne);
+
+        // Assert
+        assert total == 800.00 - 50.00;
     }
 
 }
