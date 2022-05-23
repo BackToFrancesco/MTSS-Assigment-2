@@ -79,6 +79,20 @@ public class EShopTest {
     }
 
     @Test
+    public void testNotEmptyOrder() throws BillException {
+        // Arrange
+        List<EItem> items = new ArrayList<>();
+        items.add(new EItem(EItemType.PROCESSOR, "intel", 10.00));
+        items.add(new EItem(EItemType.PROCESSOR, "intel", 20.00));
+
+        // Act
+        double total = bill.getOrderPrice(items, userMaggiorenne);
+
+        // Assert
+        assert total == 30.00;
+    }
+
+    @Test
     public void testMoreThanFiveProcessorDiscountOrder() throws BillException {
         // Arrange
         List<EItem> items = new ArrayList<>();
@@ -178,22 +192,22 @@ public class EShopTest {
     public void testMouseDiscountAndProcessorAndMouseOrKeayboardDiscount() throws BillException {
         // Arrange
         List<EItem> items = new ArrayList<>();
-        for(int i = 0; i < 6; i++) {
-            items.add(new EItem(EItemType.PROCESSOR,"processor", 50.00));
+        for (int i = 0; i < 6; i++) {
+            items.add(new EItem(EItemType.PROCESSOR, "processor", 50.00));
         }
-        for(int i = 0; i < 11; i++) {
-            items.add(new EItem(EItemType.MOUSE,"mouse", 10.00));
+        for (int i = 0; i < 11; i++) {
+            items.add(new EItem(EItemType.MOUSE, "mouse", 10.00));
         }
 
-        for(int i = 0; i < 11; i++) {
-            items.add(new EItem(EItemType.KEYBOARD,"keyboard", 20.00));
+        for (int i = 0; i < 11; i++) {
+            items.add(new EItem(EItemType.KEYBOARD, "keyboard", 20.00));
         }
 
         // Act
         double total = bill.getOrderPrice(items, userMaggiorenne);
 
         // Assert
-        assert total == (630.00 - 25.00 - 10.00 - 10.00) ;
+        assert total == (630.00 - 25.00 - 10.00 - 10.00);
     }
 
     @Test
@@ -290,7 +304,23 @@ public class EShopTest {
         assert total == (1130.00 - 25.00 - 10.00 - 10.00) * 0.9 ;
     }
 
-    @Test
+    @Test(expected = BillException.class)
+    public void testMoreThan30Items() throws BillException {
+        // Arrange
+        List<EItem> items = new ArrayList<>();
+        EItem item1 = new EItem(EItemType.MOUSE, "Mouse", 50.00);
+        for (int i = 0; i < 33; i++) {
+            items.add(item1);
+        }
+
+        // Act
+        bill.getOrderPrice(items, userMaggiorenne);
+
+        // Assert
+        fail();
+    }
+  
+      @Test
     public void testCommission() throws BillException {
         // Arrange
         List<EItem> items = new ArrayList<>();
@@ -302,5 +332,4 @@ public class EShopTest {
         // Assert
         assert total == 8+2;
     }
-
 }
