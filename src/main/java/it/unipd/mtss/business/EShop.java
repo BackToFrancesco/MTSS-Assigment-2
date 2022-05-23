@@ -24,8 +24,8 @@ public class EShop implements Bill {
             total += eItem.getPrice();
         }
 
-        //se gli item sono più di 30
-        if(totalItems > 30) {
+        // se gli item sono più di 30
+        if (totalItems > 30) {
             throw new BillException("Totale di 30 elementi superato");
         }
 
@@ -152,13 +152,50 @@ public class EShop implements Bill {
         }
     }
 
-    // Se l’importo totale è inferiore a 10 € 
-    //viene aggiunta una commissione di 2 €;
+    // Se l’importo totale è inferiore a 10 €
+    // viene aggiunta una commissione di 2 €;
     private double getCommissionAmount(double totalPrice) {
-        if(totalPrice < 10){
-            return 2;}
-        else{
-            return 0;}
+        if (totalPrice < 10) {
+            return 2;
+        } else {
+            return 0;
+        }
+    }
+
+    // Prevedere la possibilità di regalare,
+    // in modo casuale, 10 ordini effettuati dalle 18:00
+    // alle 19:00 da utenti minorenni differenti.
+    public List<Order> getUnder18FreeOrders(List<Order> itemOrders) {
+
+        List<User> userList = new ArrayList<>();
+        List<Order> freeOrders = new ArrayList<>();
+
+        ArrayList<Order> orders = new ArrayList<>();
+        for (Order itemOrder : itemOrders) {
+            if (itemOrder.getUser().getAge() < 18
+                    && itemOrder.getOrderTime().isAfter(itemOrder.startGiftTime)
+                    && itemOrder.getOrderTime().isBefore(itemOrder.endGiftTime))
+            {
+                orders.add(itemOrder);
+            }
+        }
+        boolean isIn = false;
+        while (freeOrders.size() < 10 && orders.size() > 0) {
+            isIn = false;
+            int i = (int) (Math.random() * orders.size());
+
+            if (userList.contains(orders.get(i).getUser())) {
+                isIn = true;
+                orders.remove(i);
+            }
+
+            if (isIn == false) {
+                userList.add(orders.get(i).getUser());
+                freeOrders.add(orders.get(i));
+                orders.remove(i);
+            }
+        }
+        return freeOrders;
     }
 
 }

@@ -234,74 +234,74 @@ public class EShopTest {
     public void testMoreThan1000() throws BillException {
         // Arrange
         List<EItem> items = new ArrayList<>();
-        for(int i = 0; i < 6; i++) {
-            items.add(new EItem(EItemType.MOTHERBOARD,"motherboard", 200.00));
+        for (int i = 0; i < 6; i++) {
+            items.add(new EItem(EItemType.MOTHERBOARD, "motherboard", 200.00));
         }
 
         // Act
         double total = bill.getOrderPrice(items, userMaggiorenne);
 
         // Assert
-        assert total == 1200.00 * 0.9 ;
+        assert total == 1200.00 * 0.9;
     }
 
     @Test
     public void testNotMoreThan1000() throws BillException {
         // Arrange
         List<EItem> items = new ArrayList<>();
-            items.add(new EItem(EItemType.MOTHERBOARD,"motherboard", 999.99));
+        items.add(new EItem(EItemType.MOTHERBOARD, "motherboard", 999.99));
 
         // Act
         double total = bill.getOrderPrice(items, userMaggiorenne);
 
         // Assert
-        assert total == 999.99 ;
+        assert total == 999.99;
     }
 
     @Test
     public void testMoreThanFiveProcessorAndMoreThan10MouseAndTotalMoreThan1000() throws BillException {
         // Arrange
         List<EItem> items = new ArrayList<>();
-        for(int i = 0; i < 6; i++) {
-            items.add(new EItem(EItemType.PROCESSOR,"processor", 100.00));
+        for (int i = 0; i < 6; i++) {
+            items.add(new EItem(EItemType.PROCESSOR, "processor", 100.00));
         }
-        for(int i = 0; i < 11; i++) {
-            items.add(new EItem(EItemType.MOUSE,"mouse", 10.00));
+        for (int i = 0; i < 11; i++) {
+            items.add(new EItem(EItemType.MOUSE, "mouse", 10.00));
         }
 
-        items.add(new EItem(EItemType.MOTHERBOARD,"Motherboard 1",  250.00));
-        items.add(new EItem(EItemType.MOTHERBOARD,"Motherboard 2",  250.00));
+        items.add(new EItem(EItemType.MOTHERBOARD, "Motherboard 1", 250.00));
+        items.add(new EItem(EItemType.MOTHERBOARD, "Motherboard 2", 250.00));
 
         // Act
         double total = bill.getOrderPrice(items, userMaggiorenne);
 
         // Assert
-        assert total == (1210.00 - 50.00 - 10.00) * 0.9 ;
+        assert total == (1210.00 - 50.00 - 10.00) * 0.9;
     }
 
     @Test
     public void testAllDiscounts() throws BillException {
         // Arrange
         List<EItem> items = new ArrayList<>();
-        for(int i = 0; i < 6; i++) {
-            items.add(new EItem(EItemType.PROCESSOR,"processor", 50.00));
+        for (int i = 0; i < 6; i++) {
+            items.add(new EItem(EItemType.PROCESSOR, "processor", 50.00));
         }
-        for(int i = 0; i < 11; i++) {
-            items.add(new EItem(EItemType.MOUSE,"mouse", 10.00));
-        }
-
-        for(int i = 0; i < 11; i++) {
-            items.add(new EItem(EItemType.KEYBOARD,"keyboard", 20.00));
+        for (int i = 0; i < 11; i++) {
+            items.add(new EItem(EItemType.MOUSE, "mouse", 10.00));
         }
 
-        items.add(new EItem(EItemType.MOTHERBOARD,"motherboard", 300.00));
-        items.add(new EItem(EItemType.MOTHERBOARD,"motherboard", 200.00));
+        for (int i = 0; i < 11; i++) {
+            items.add(new EItem(EItemType.KEYBOARD, "keyboard", 20.00));
+        }
+
+        items.add(new EItem(EItemType.MOTHERBOARD, "motherboard", 300.00));
+        items.add(new EItem(EItemType.MOTHERBOARD, "motherboard", 200.00));
 
         // Act
         double total = bill.getOrderPrice(items, userMaggiorenne);
 
         // Assert
-        assert total == (1130.00 - 25.00 - 10.00 - 10.00) * 0.9 ;
+        assert total == (1130.00 - 25.00 - 10.00 - 10.00) * 0.9;
     }
 
     @Test(expected = BillException.class)
@@ -319,8 +319,8 @@ public class EShopTest {
         // Assert
         fail();
     }
-  
-      @Test
+
+    @Test
     public void testCommission() throws BillException {
         // Arrange
         List<EItem> items = new ArrayList<>();
@@ -330,6 +330,160 @@ public class EShopTest {
         double total = bill.getOrderPrice(items, userMaggiorenne);
 
         // Assert
-        assert total == 8+2;
+        assert total == 8 + 2;
+    }
+
+    @Test
+    public void testGiveAwayToOnlyUnder18UsersInTime() throws BillException {
+        // Arrange
+        List<Order> listOrders = new ArrayList<>();
+        List<EItem> listEItem = new LinkedList<>();
+        listEItem.add(new EItem(EItemType.KEYBOARD, "RedDragon Lite", 40.00));
+        listOrders.add(new Order(LocalTime.of(18, 59, 59), userMinorenne, listEItem,
+                bill.getOrderPrice(listEItem, userMaggiorenne)));
+
+        // Act
+        int freeOrdersListSize = bill.getUnder18FreeOrders(listOrders).size();
+
+        // Assert
+        assert freeOrdersListSize == 1;
+    }
+
+    @Test
+    public void testGiveAwayToOnlyUnder18UserNotInTime() throws BillException {
+        // Arrange
+        List<Order> listOrders = new ArrayList<>();
+        List<EItem> listEItem = new LinkedList<>();
+        listEItem.add(new EItem(EItemType.KEYBOARD, "RedDragon Lite", 40.00));
+        listOrders.add(new Order(LocalTime.of(19, 00, 00), userMinorenne, listEItem,
+                bill.getOrderPrice(listEItem, userMaggiorenne)));
+
+        // Act
+        int freeOrdersListSize = bill.getUnder18FreeOrders(listOrders).size();
+
+        // Assert
+        assert freeOrdersListSize == 0;
+    }
+
+    @Test
+    public void testGiveAwayToOnlyOver18UserInTime() throws BillException {
+        // Arrange
+        List<Order> listOrders = new ArrayList<>();
+        List<EItem> listEItem = new LinkedList<>();
+        listEItem.add(new EItem(EItemType.KEYBOARD, "RedDragon Lite", 40.00));
+        listOrders.add(new Order(LocalTime.of(18, 59, 59), userMaggiorenne, listEItem,
+                bill.getOrderPrice(listEItem, userMaggiorenne)));
+
+        // Act
+        int freeOrdersListSize = bill.getUnder18FreeOrders(listOrders).size();
+
+        // Assert
+        assert freeOrdersListSize == 0;
+    }
+
+    @Test
+    public void testGiveAwayToOnlyOver18UserNotInTime() throws BillException {
+        // Arrange
+        List<Order> listOrders = new ArrayList<>();
+        List<EItem> listEItem = new LinkedList<>();
+        listEItem.add(new EItem(EItemType.KEYBOARD, "RedDragon Lite", 40.00));
+        listOrders.add(new Order(LocalTime.of(19, 00, 00), userMaggiorenne, listEItem,
+                bill.getOrderPrice(listEItem, userMaggiorenne)));
+
+        // Act
+        int freeOrdersListSize = bill.getUnder18FreeOrders(listOrders).size();
+
+        // Assert
+        assert freeOrdersListSize == 0;
+    }
+
+    @Test
+    public void testGiveAwayToAllTypeOfUsersInTime() throws BillException {
+        // Arrange
+        List<Order> listOrders = new ArrayList<>();
+        List<EItem> listEItem = new LinkedList<>();
+        listEItem.add(new EItem(EItemType.KEYBOARD, "RedDragon Lite", 40.00));
+        listOrders.add(new Order(LocalTime.of(18, 59, 59), userMinorenne, listEItem,
+                bill.getOrderPrice(listEItem, userMaggiorenne)));
+        listOrders.add(new Order(LocalTime.of(18, 59, 59), userMinorenne, listEItem,
+                bill.getOrderPrice(listEItem, userMinorenne)));
+        // Act
+        int freeOrdersListSize = bill.getUnder18FreeOrders(listOrders).size();
+
+        // Assert
+        assert freeOrdersListSize == 1;
+    }
+
+    @Test
+    public void testGiveAwayToAllTypeOfUsersNotInTime() throws BillException {
+        // Arrange
+        List<Order> listOrders = new ArrayList<>();
+        List<EItem> listEItem = new LinkedList<>();
+        listEItem.add(new EItem(EItemType.KEYBOARD, "RedDragon Lite", 40.00));
+        listOrders.add(new Order(LocalTime.of(19, 00, 00), userMinorenne, listEItem,
+                bill.getOrderPrice(listEItem, userMaggiorenne)));
+        listOrders.add(new Order(LocalTime.of(19, 00, 00), userMinorenne, listEItem,
+                bill.getOrderPrice(listEItem, userMinorenne)));
+        // Act
+        int freeOrdersListSize = bill.getUnder18FreeOrders(listOrders).size();
+
+        // Assert
+        assert freeOrdersListSize == 0;
+    }
+
+    @Test
+    public void testGiveAwayToOnlyUnder18DifferentUsersInTime() throws BillException {
+
+        // Arrange
+        boolean duplicated = false;
+        List<Order> listOrders = new ArrayList<>();
+        List<EItem> listEItem = new LinkedList<>();
+        listEItem.add(new EItem(EItemType.KEYBOARD, "RedDragon Lite", 40.00));
+        listEItem.add(new EItem(EItemType.PROCESSOR, "intel i5", 200.00));
+        listEItem.add(new EItem(EItemType.MOUSE, "Apple magic", 80.00));
+        listOrders.add(new Order(LocalTime.of(18, 59, 59), userMinorenne, listEItem,
+                bill.getOrderPrice(listEItem, userMinorenne)));
+        listOrders.add(new Order(LocalTime.of(18, 59, 59), userMinorenne, listEItem,
+                bill.getOrderPrice(listEItem, userMinorenne2)));
+        listOrders.add(new Order(LocalTime.of(18, 59, 59), userMinorenne, listEItem,
+                bill.getOrderPrice(listEItem, userMinorenne3)));
+
+        // Act
+        List<Order> giftsList = bill.getUnder18FreeOrders(listOrders);
+        List<User> userWithAlreadyAGift = new ArrayList<>();
+        for (Order order : giftsList) {
+            if (userWithAlreadyAGift.contains(order.getUser())) {
+                duplicated = true;
+            } else {
+                userWithAlreadyAGift.add(order.getUser());
+            }
+        }
+
+        // Assert
+        if (duplicated) {
+            fail();
+        }
+    }
+
+    @Test
+    public void testGiveAwayToOnlyUnder18UsersMoreThenTenInTime() throws BillException {
+
+        // Arrange
+        List<Order> listOrders = new ArrayList<>();
+        List<EItem> listEItem = new LinkedList<>();
+
+        listEItem.add(new EItem(EItemType.KEYBOARD, "RedDragon Lite", 40.00));
+
+        for (int i = 1; i <= 20; i++) {
+            User under18User = new User("Nome", "Cognome", "NumTel", LocalDate.of(2005, 1, i));
+            listOrders.add(new Order(LocalTime.of(18, 59, 59), under18User, listEItem,
+                    bill.getOrderPrice(listEItem, under18User)));
+        }
+
+        // Act
+        int freeOrdersListSize = bill.getUnder18FreeOrders(listOrders).size();
+
+        // Assert
+        assert freeOrdersListSize == 10;
     }
 }
