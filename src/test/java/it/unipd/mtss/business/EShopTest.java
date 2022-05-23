@@ -216,4 +216,78 @@ public class EShopTest {
         assert total == 125.00 - 5.00;
     }
 
+    @Test
+    public void testMoreThan1000() throws BillException {
+        // Arrange
+        List<EItem> items = new ArrayList<>();
+        for(int i = 0; i < 6; i++) {
+            items.add(new EItem(EItemType.MOTHERBOARD,"motherboard", 200.00));
+        }
+
+        // Act
+        double total = bill.getOrderPrice(items, userMaggiorenne);
+
+        // Assert
+        assert total == 1200.00 * 0.9 ;
+    }
+
+    @Test
+    public void testNotMoreThan1000() throws BillException {
+        // Arrange
+        List<EItem> items = new ArrayList<>();
+            items.add(new EItem(EItemType.MOTHERBOARD,"motherboard", 999.99));
+
+        // Act
+        double total = bill.getOrderPrice(items, userMaggiorenne);
+
+        // Assert
+        assert total == 999.99 ;
+    }
+
+    @Test
+    public void testMoreThanFiveProcessorAndMoreThan10MouseAndTotalMoreThan1000() throws BillException {
+        // Arrange
+        List<EItem> items = new ArrayList<>();
+        for(int i = 0; i < 6; i++) {
+            items.add(new EItem(EItemType.PROCESSOR,"processor", 100.00));
+        }
+        for(int i = 0; i < 11; i++) {
+            items.add(new EItem(EItemType.MOUSE,"mouse", 10.00));
+        }
+
+        items.add(new EItem(EItemType.MOTHERBOARD,"Motherboard 1",  250.00));
+        items.add(new EItem(EItemType.MOTHERBOARD,"Motherboard 2",  250.00));
+
+        // Act
+        double total = bill.getOrderPrice(items, userMaggiorenne);
+
+        // Assert
+        assert total == (1210.00 - 50.00 - 10.00) * 0.9 ;
+    }
+
+    @Test
+    public void testAllDiscounts() throws BillException {
+        // Arrange
+        List<EItem> items = new ArrayList<>();
+        for(int i = 0; i < 6; i++) {
+            items.add(new EItem(EItemType.PROCESSOR,"processor", 50.00));
+        }
+        for(int i = 0; i < 11; i++) {
+            items.add(new EItem(EItemType.MOUSE,"mouse", 10.00));
+        }
+
+        for(int i = 0; i < 11; i++) {
+            items.add(new EItem(EItemType.KEYBOARD,"keyboard", 20.00));
+        }
+
+        items.add(new EItem(EItemType.MOTHERBOARD,"motherboard", 300.00));
+        items.add(new EItem(EItemType.MOTHERBOARD,"motherboard", 200.00));
+
+        // Act
+        double total = bill.getOrderPrice(items, userMaggiorenne);
+
+        // Assert
+        assert total == (1130.00 - 25.00 - 10.00 - 10.00) * 0.9 ;
+    }
+
 }

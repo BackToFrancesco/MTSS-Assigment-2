@@ -31,12 +31,15 @@ public class EShop implements Bill {
 
         double processorDiscount = getProcessorDiscount(itemsOrdered);
         double mouseDiscount = getMouseDiscount(itemsOrdered);
+
         double mouseOrKeyboardDiscount=getMouseOrKeyBoardDiscount(itemsOrdered);
 
-        total = total + processorDiscount - mouseDiscount - 
-        mouseOrKeyboardDiscount;
+        total = total + processorDiscount - mouseDiscount -
+                mouseOrKeyboardDiscount;
 
-        return total;
+        double overallDiscount = getOverallDiscount(total);
+
+        return total - overallDiscount;
     }
 
     // Se vengono ordinati più di 5 Processori viene fatto uno sconto del
@@ -130,6 +133,16 @@ public class EShop implements Bill {
             return 0;
         } else {
             return (minPrice);
+        }
+    }
+
+    // Se l’importo totale degli articoli supera
+    // i 1000 euro viene fatto uno sconto del 10% sul totale;
+    private double getOverallDiscount(double totalPrice) {
+        if (totalPrice > 1000) {
+            return totalPrice * 0.1;
+        } else {
+            return 0;
         }
     }
 
