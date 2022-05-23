@@ -290,4 +290,17 @@ public class EShopTest {
         assert total == (1130.00 - 25.00 - 10.00 - 10.00) * 0.9 ;
     }
 
+    @Test
+    public void testCommission() throws BillException {
+        // Arrange
+        List<EItem> items = new ArrayList<>();
+
+        items.add(new EItem(EItemType.MOUSE, "1", 8.00));
+        // Act
+        double total = bill.getOrderPrice(items, userMaggiorenne);
+
+        // Assert
+        assert total == 8+2;
+    }
+
 }
