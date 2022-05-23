@@ -24,6 +24,11 @@ public class EShop implements Bill {
             total += eItem.getPrice();
         }
 
+        //se gli item sono più di 30
+        if(totalItems > 30) {
+            throw new BillException("Totale di 30 elementi superato");
+        }
+
         // se non c'è nessun item
         if (totalItems == 0) {
             throw new BillException("Nessun item nell'ordine");
