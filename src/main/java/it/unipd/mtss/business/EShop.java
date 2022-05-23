@@ -43,8 +43,9 @@ public class EShop implements Bill {
                 mouseOrKeyboardDiscount;
 
         double overallDiscount = getOverallDiscount(total);
+        double commission = getCommissionAmount(total);
 
-        return total - overallDiscount;
+        return total + commission - overallDiscount;
     }
 
     // Se vengono ordinati più di 5 Processori viene fatto uno sconto del
@@ -149,6 +150,15 @@ public class EShop implements Bill {
         } else {
             return 0;
         }
+    }
+
+    // Se l’importo totale è inferiore a 10 € 
+    //viene aggiunta una commissione di 2 €;
+    private double getCommissionAmount(double totalPrice) {
+        if(totalPrice < 10){
+            return 2;}
+        else{
+            return 0;}
     }
 
 }
